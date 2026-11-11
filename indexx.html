@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeju Translating - 제주어 번역기</title>
+    <style>
+        @font-face {
+            font-family: 'Pretendard';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-display: swap;
+        }
+
+        :root {
+            --bg-color: #ffffff;
+            --primary: #0f766e;
+            --primary-hover: #0d9488;
+            --accent: #f97316;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --placeholder-color: #94a3b8;
+            --card-bg: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, textarea, button, input {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* 1. 히어로 영역 */
+        .hero {
+            position: relative;
+            width: 100vw;
+            height: 75vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.55)),
+                        url('제주.jpg') center/cover no-repeat;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .hero-banner {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 26px 48px;
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            max-width: 90%;
+        }
+
+        .hero-title {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 2.9rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #0f766e, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-sub {
+            font-size: 1.15rem;
+            color: var(--text-dark);
+            margin-top: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .scroll-down {
+            position: absolute;
+            bottom: 24px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-weight: bold;
+        }
+
+        /* 2. 번역 메인 영역 */
+        .main-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .engine-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 10px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .engine-status-bar.warning {
+            background: #fffbeb;
+            border-color: #fde68a;
+            color: #b45309;
+        }
+
+        .translator-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
+            margin-bottom: 50px;
+        }
+
+        .mode-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .mode-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .swap-btn {
+            background: #ffffff;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 20px;
+            padding: 6px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .swap-btn:hover {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pane-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        textarea, .output-box {
+            width: 100%;
+            height: 180px;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            outline: none;
+            resize: none;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        textarea::placeholder {
+            color: var(--placeholder-color);
+            font-style: italic;
+        }
+
+        .output-box {
+            background: var(--card-bg);
+            white-space: pre-wrap;
+            overflow-y: auto;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .output-box.is-placeholder {
+            color: var(--placeholder-color);
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .input-hint {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .translate-action-btn {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+        }
+
+        .translate-action-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .translate-action-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .chips-wrapper {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .chips-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .chips-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #dbeafe;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.83rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: #dbeafe;
+        }
+
+        /* 3. 갤러리 영역 */
+        .gallery-section {
+            margin-bottom: 50px;
+        }
+
+        .gallery-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .img-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .img-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .img-card-body {
+            padding: 16px;
+        }
+
+        .img-card-body h4 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .img-card-body p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        /* 4. 사전 배너 */
+        .dic-banner {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            color: #ffffff;
+            padding: 24px 30px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dic-banner-text h3 {
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+
+        .dic-banner-text p {
+            font-size: 0.88rem;
+            opacity: 0.9;
+        }
+
+        .dic-link {
+            background: #ffffff;
+            color: #065f46;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .dic-link:hover {
+            background: #f0fdf4;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            background: #fafafa;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="hero-banner">
+            <h1 class="hero-title">Jeju Translating</h1>
+            <p class="hero-sub">ᄒᆞᆫ저옵서예 [hɒnʥʌop̚sʌje]</p>
+        </div>
+        <a href="#translator-view" class="scroll-down">
+            <span>번역하러 내려가기 ↓</span>
+        </a>
+    </header>
+
+    <main class="main-container" id="translator-view">
+        
+        <div id="statusBar" class="engine-status-bar">
+            <span id="statusMsg">⚡ Google Gemini AI 정밀 번역 엔진 준비 완료</span>
+            <span id="modelTag" style="font-size: 0.78rem; opacity: 0.85;">Gemini 3.8 Flash</span>
+        </div>
+
+        <section class="translator-card">
+            <div class="mode-header">
+                <div class="mode-title">
+                    <span id="sourceLangTag">표준어</span>
+                    <span>➔</span>
+                    <span id="targetLangTag">제주어</span>
+                </div>
+                <button class="swap-btn" id="swapBtn" type="button">
+                    <span>언어 전환 ⇄</span>
+                </button>
+            </div>
+
+            <div class="grid-inputs">
+                <div>
+                    <label class="pane-label" id="inputHeading">표준어 입력</label>
+                    <textarea id="sourceText" placeholder="이 닦았니?"></textarea>
+                </div>
+                <div>
+                    <label class="pane-label" id="outputHeading">제주어 번역 결과</label>
+                    <div id="targetText" class="output-box is-placeholder">니 미런?</div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <span class="input-hint">입력 후 <b>[번역하기]</b> 클릭 또는 <b>Enter</b>를 누르세요.</span>
+                <button class="translate-action-btn" id="translateBtn" type="button">번역하기</button>
+            </div>
+
+            <div class="chips-wrapper">
+                <span class="chips-label" id="chipsTitle">😂 빵 터지는 일상 제주어 번역 예시 (클릭하면 자동 번역)</span>
+                <div class="chips-list" id="chipsContainer"></div>
+            </div>
+        </section>
+
+        <section class="gallery-section">
+            <h3 class="gallery-title">제주의 숨결</h3>
+            <div class="cards-grid">
+                <article class="img-card">
+                    <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=600&q=80" alt="제주 돌담">
+                    <div class="img-card-body">
+                        <h4>바람과 돌담</h4>
+                        <p>거센 바람에도 끄떡없는 제주의 지혜가 담긴 검은 현무암 돌담입니다.</p>
+                    </div>
+                </article>
+                <article class="img-card">
+                    <img src="https://images.unsplash.com/photo-1578637387939-43c525550085?auto=format&fit=crop&w=600&q=80" alt="성산일출봉">
+                    <div class="img-card-body">
+                        <h4>성산일출봉</h4>
+                        <p>푸른 바다 위로 우뚝 솟아오른 웅장한 화산 분화구 풍경입니다.</p>
+                    </div>
+                </article>
+                <article class="img-card">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="김녕 해안">
+                    <div class="img-card-body">
+                        <h4>김녕 에메랄드 해변</h4>
+                        <p>눈이 시리도록 투명하고 푸른 제주의 대표 해안 풍경입니다.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <aside class="dic-banner">
+            <div class="dic-banner-text">
+                <h3>더 정확한 어원과 고유어가 궁금하다면?</h3>
+                <p>제주특별자치도 제주어표준사전(jejudic.kr) 공식 아카이브에서 단어를 검색하세요.</p>
+            </div>
+            <a href="http://www.jejudic.kr" target="_blank" class="dic-link">
+                제주어사전 바로가기 ↗
+            </a>
+        </aside>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Jeju Translating. 개인정보를 수집하거나 전송하지 않습니다.</p>
+    </footer>
+
+    <script>
+    (function() {
+        const GEMINI_API_KEY = "AQ.Ab8RN6KgQ7QNX7NXcCtuV4-p1gMRmkNaFIY_XfwtQWuvj0VMRQ";
+
+        let isStandardToJeju = true;
+        let isTranslating = false;
+
+        const samplesStandard = [
+            "이 닦았니?",
+            "영석이 왜 그렇게 살 쪘니?",
+            "진짜요?",
+            "엄마 어디 가?",
+            "정신 차려라!",
+            "잔소리 좀 하지 마라",
+            "식사하셨습니까?"
+        ];
+
+        const samplesJeju = [
+            "니 미런?",
+            "영석이 무사 경 살졈시냐?",
+            "진짜마씸?",
+            "어마니 어디 감수광?",
+            "정싱 촐려라!",
+            "구시렁거리지 마랑!",
+            "진지 잡수셨수과?"
+        ];
+
+        const localDict = [
+            { std: "영석이 왜 그렇게 살 쪘니", jeju: "영석이 무사 경 ㅅㆍㄹ졈시냐" },
+            { std: "영석이 왜 그렇게 살 쪘어", jeju: "영석이 무사 경 ㅅㆍㄹ졈시냐" },
+            { std: "왜 그렇게 살 쪘니", jeju: "무사 경 ㅅㆍㄹ졈시냐" },
+            { std: "왜 그렇게", jeju: "무사 경" },
+            { std: "살 쪘니", jeju: "ㅅㆍㄹ졈시냐" },
+            { std: "엄마 어디 가", jeju: "어마니 어디 감수광" },
+            { std: "엄마 어디가", jeju: "어마니 어디 감수광" },
+            { std: "엄마 어디개", jeju: "어마니 어디 감수광" },
+            { std: "어디 가니", jeju: "어디 가맨" },
+            { std: "어디 가", jeju: "어디 가맨" },
+            { std: "어디 가세요", jeju: "어디 감수광" },
+            { std: "엄마", jeju: "어마니" },
+            { std: "어머니", jeju: "어마니" },
+            { std: "아빠", jeju: "아바지" },
+            { std: "아버지", jeju: "아바지" },
+            { std: "할머니", jeju: "할망" },
+            { std: "할아버지", jeju: "하르방" },
+            { std: "이 닦았니", jeju: "니 미런" },
+            { std: "이 닦았어", jeju: "니 미렀주" },
+            { std: "이 닦아라", jeju: "니 미러라" },
+            { std: "왜 그러니", jeju: "무사 경 햄시니" },
+            { std: "왜 그래", jeju: "무사 경 햄시니" },
+            { std: "정신 차려라", jeju: "정싱 촐려라" },
+            { std: "잔소리 하지 마라", jeju: "구시렁거리지 마랑" },
+            { std: "잔소리 좀 하지 마라", jeju: "구시렁거리지 마랑" },
+            { std: "밥 먹었니", jeju: "밥 먹언" },
+            { std: "밥은 먹고 다니냐", jeju: "밥은 먹앙 댕기냐" },
+            { std: "식사하셨습니까", jeju: "진지 잡수셨수과" },
+            { std: "수고하셨습니다", jeju: "폭삭 속았수다" },
+            { std: "어서 오세요", jeju: "ㅎㆍㄴ저 옵서예" },
+            { std: "빨리빨리", jeju: "ㅎㆍㄴ저ㅎㆍㄴ저" },
+            { std: "진짜요", jeju: "진짜마씸" },
+            { std: "돼지", jeju: "도새기" },
+            { std: "강아지", jeju: "강생이" },
+            { std: "고양이", jeju: "고냉이" },
+            { std: "감자", jeju: "지슬" },
+            { std: "고구마", jeju: "감저" },
+            { std: "많이", jeju: "하영" },
+            { std: "반갑습니다", jeju: "반갑수다" },
+            { std: "고맙습니다", jeju: "고맙수다" },
+            { std: "감사합니다", jeju: "고맙수다" }
+        ];
+
+        const sourceInput = document.getElementById("sourceText");
+        const targetOutput = document.getElementById("targetText");
+        const swapBtn = document.getElementById("swapBtn");
+        const translateBtn = document.getElementById("translateBtn");
+        const sourceLangTag = document.getElementById("sourceLangTag");
+        const targetLangTag = document.getElementById("targetLangTag");
+        const inputHeading = document.getElementById("inputHeading");
+        const outputHeading = document.getElementById("outputHeading");
+        const chipsContainer = document.getElementById("chipsContainer");
+        const chipsTitle = document.getElementById("chipsTitle");
+        const statusBar = document.getElementById("statusBar");
+        const statusMsg = document.getElementById("statusMsg");
+
+        function renderChips() {
+            chipsContainer.innerHTML = "";
+            const currentList = isStandardToJeju ? samplesStandard : samplesJeju;
+            chipsTitle.textContent = isStandardToJeju 
+                ? "😂 빵 터지는 일상 제주어 번역 예시 (클릭하면 자동 번역)" 
+                : "💡 알쏭달쏭한 제주어를 표준어로 바꿔보기 (클릭하면 자동 번역)";
+
+            currentList.forEach(text => {
+                const btn = document.createElement("button");
+                btn.className = "chip";
+                btn.type = "button";
+                btn.textContent = text;
+                btn.onclick = function() {
+                    sourceInput.value = text;
+                    runTranslate();
+                };
+                chipsContainer.appendChild(btn);
+            });
+        }
+
+        function translateLocally(text, toJeju) {
+            let res = text;
+            if (toJeju) {
+                localDict.forEach(item => {
+                    res = res.split(item.std).join(item.jeju);
+                });
+                res = res.split("진짜요?").join("진짜마씸?")
+                         .split("그래요?").join("그라마씸?")
+                         .split("맞아요?").join("맞으마씸?")
+                         .split("했니?").join("핸?")
+                         .split("했어?").join("핸?")
+                         .split("했어").join("해쭈")
+                         .split("요?").join("마씸?")
+                         .split("요.").join("마씸.");
+                if (res.endsWith("요")) res = res.slice(0, -1) + "마씸";
+            } else {
+                res = res.split("ㅅㆍㄹ").join("살")
+                         .split("ㅎㆍㄴ저").join("혼저")
+                         .split("어마니").join("엄마");
+                localDict.forEach(item => {
+                    const plainJeju = item.jeju.split("ㅅㆍㄹ").join("살").split("ㅎㆍㄴ저").join("혼저");
+                    res = res.split(item.jeju).join(item.std);
+                    res = res.split(plainJeju).join(item.std);
+                });
+                res = res.split("마씸?").join("요?")
+                         .split("마씸.").join("요.")
+                         .split("핸?").join("했니?")
+                         .split("해쭈").join("했어");
+                if (res.endsWith("마씸")) res = res.slice(0, -2) + "요";
+            }
+            return res;
+        }
+
+        // systemInstruction 기반 Gemini AI 번역기
+        async function translateWithGemini(text, toJeju) {
+            const systemPrompt = toJeju
+                ? `당신은 한국어 표준어를 순수 제주어(제주 방언)로 번역하는 번역기입니다.
+[필수 규칙]
+1. 타 지역(전라도, 경상도) 사투리를 절대 섞지 마세요.
+2. 아래아가 들어가는 어휘는 텍스트 설명 없이 반드시 'ㆍ' 기호를 사용하세요 (예: 살 쪘니 -> ㅅㆍㄹ졈시냐, 삼촌 -> ㅅㆍㅁ춘, 혼저 -> ㅎㆍㄴ저).
+3. 존칭 질문 어미 '~요?'는 제주어 존칭 어미 '~마씸?'으로 번역하세요.
+4. 일상 질문 어미: '~했니?' -> '~핸?', '~했습니까?' -> '~했수과?', '~하셨나요?' -> '~했수광?'
+5. '이 닦았니?'는 '니 미런?'으로 번역하세요.
+6. '엄마 어디 가', '엄마 어디가', '엄마 어디개' 등은 '어마니 어디 감수광?'으로 번역하세요.
+7. 오타나 구어체가 섞여 있어도 문맥을 파악해 자연스러운 제주어로 번역하세요.
+8. 설명, 따옴표, 접두어(제주어: 등), 화살표를 일체 붙이지 말고 오직 번역된 결과 한 문장만 출력하세요.`
+                : `당신은 제주 방언을 표준 한국어로 번역하는 번역기입니다.
+[필수 규칙]
+1. 사용자가 아래아 없이 적은 제주어나 아래아('ㆍ')가 포함된 제주어 모두 문맥을 파악해 올바른 표준어로 복원하세요.
+2. '~마씸?'은 표준어 '~요?'로 변환하세요.
+3. '니 미런?'은 '이 닦았니?'로 번역하세요.
+4. 번역된 표준어 결과에는 아래아(ㆍ)를 절대 넣지 마세요.
+5. 설명, 따옴표, 접두어(표준어: 등), 화살표를 일체 붙이지 말고 오직 번역된 결과 한 문장만 출력하세요.`;
+
+            const model = "gemini-3.8-flash";
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+            
+            const payload = {
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+                contents: [{
+                    role: "user",
+                    parts: [{ text: text }]
+                }],
+                generationConfig: {
+                    temperature: 0.1,
+                    maxOutputTokens: 150
+                }
+            };
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errJson = await response.json().catch(() => ({}));
+                throw new Error(errJson.error?.message || `HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                let out = data.candidates[0].content.parts[0].text.trim();
+                // 잡음 기호 및 따옴표 정제
+                out = out.replace(/^['"]|['"]$/g, '');
+                out = out.replace(/^제주어:\s*/, '').replace(/^표준어:\s*/, '');
+                out = out.replace(/^->\s*/, '').replace(/->.*$/, '');
+                return out.trim();
+            } else {
+                throw new Error("응답이 비어 있습니다.");
+            }
+        }
+
+        async function runTranslate() {
+            if (isTranslating) return;
+
+            const raw = sourceInput.value.trim();
+            if (!raw) {
+                targetOutput.textContent = isStandardToJeju ? "니 미런?" : "이 닦았니?";
+                targetOutput.classList.add("is-placeholder");
+                return;
+            }
+
+            targetOutput.classList.remove("is-placeholder");
+            targetOutput.textContent = "⚡ AI 분석 중...";
+            isTranslating = true;
+            translateBtn.disabled = true;
+
+            try {
+                const aiResult = await translateWithGemini(raw, isStandardToJeju);
+                targetOutput.textContent = aiResult;
+                statusBar.className = "engine-status-bar";
+                statusMsg.textContent = "✨ Google Gemini AI 정밀 번역 완료";
+            } catch (err) {
+                console.warn("AI 통신 오류/쿼터 초과 -> 로컬 보조 엔진 가동:", err);
+                statusBar.className = "engine-status-bar warning";
+                statusMsg.textContent = "⚠️ 일시적 호출 지연으로 로컬 사전 엔진으로 즉시 번역했습니다.";
+                
+                const fallbackResult = translateLocally(raw, isStandardToJeju);
+                targetOutput.textContent = fallbackResult;
+            } finally {
+                isTranslating = false;
+                translateBtn.disabled = false;
+            }
+        }
+
+        translateBtn.addEventListener("click", runTranslate);
+
+        sourceInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                runTranslate();
+            }
+        });
+
+        swapBtn.addEventListener("click", function() {
+            isStandardToJeju = !isStandardToJeju;
+
+            if (isStandardToJeju) {
+                sourceLangTag.textContent = "표준어";
+                targetLangTag.textContent = "제주어";
+                inputHeading.textContent = "표준어 입력";
+                outputHeading.textContent = "제주어 번역 결과";
+                sourceInput.placeholder = "이 닦았니?";
+                if (!sourceInput.value.trim()) {
+                    targetOutput.textContent = "니 미런?";
+                    targetOutput.classList.add("is-placeholder");
+                }
+            } else {
+                sourceLangTag.textContent = "제주어";
+                targetLangTag.textContent = "표준어";
+                inputHeading.textContent = "제주어 입력";
+                outputHeading.textContent = "표준어 번역 결과";
+                sourceInput.placeholder = "니 미런?";
+                if (!sourceInput.value.trim()) {
+                    targetOutput.textContent = "이 닦았니?";
+                    targetOutput.classList.add("is-placeholder");
+                }
+            }
+
+            const curOut = targetOutput.textContent;
+            if (curOut && !targetOutput.classList.contains("is-placeholder") && !curOut.includes("분석 중")) {
+                sourceInput.value = curOut;
+            }
+
+            renderChips();
+            if (sourceInput.value.trim()) {
+                runTranslate();
+            }
+        });
+
+        renderChips();
+    })();
+    </script>
+</body>
+</html>
